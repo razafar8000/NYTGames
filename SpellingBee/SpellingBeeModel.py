@@ -1,37 +1,45 @@
-import WordRepository.WordFetcher as fetcher
+import WordRepository.DictionaryReader as reader
+
 class SpellingBeeModel:
 
-    def __init__(self):
-        self.__points = 0 
-        self.__totalAnswers = []
-        self.__randomLetters = []
+    def __init__(this):
+        this.__points = 0 
+        this.__validAnswers = []
+        this.__validLetters = ""
+        WordListGenerator = reader.WordDictionary("WordRepository\words_dictionary.json")
+        this.__wordList = WordListGenerator.getWordsOfLength(7)
 
-    @property
-    def points(self):
+    #checks to see if userInput contains the 7 selected words
+    def isValid(this, userInput):
+        userInput = list(userInput)
+        for letter in userInput:
+            if letter not in this.__validLetters:
+                return False
+        return True
+    #gets list of letter that are invalid to respond to user
+    def getInvalidLetters(this,userInput):
+        userInput = str(list(userInput))
+        invalidLetterList = []
+        for letter in userInput:
+            if letter not in this.__validLetters:
+                invalidLetterList.append[letter]
+        invalidLetterList
+        
+    #If word found in list of words length 7, return true
+    def containsWord(this, userInput):
+        if userInput in this.__wordList:
+            return False
+        else:
+            return True
+    def addPoint(self):
+        self.__points += 1
+    def getPoints(self):
         return self.__points
-
-    @_points.setter
-    def _points(self, value):
-        self.__points = value
-
-    @property
-    def _totalAnswers(self):
-        return self.__totalAnswers
-
-    @_totalAnswers.setter
-    def _totalAnswers(self, value):
-        self.__totalAnswers = value
-
-    @property
-    def _randomLetters(self):
-        return self.__randomLetters
-
-    @_randomLetters.setter
-    def _randomLetters(self, value):
-        self.__randomLetters = value
-
-    
-
+    def getValidAnswers(self):
+        return self.__validAnswers
+    def addValidAnswer(self, str):
+        self.__validAnswers.append(str)
+        return True
 
 
 
