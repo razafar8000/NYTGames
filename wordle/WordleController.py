@@ -1,5 +1,6 @@
-import WordleModel
+from wordle import WordleModel
 import requests
+import os
 
 '''
 UI INTEGRATION GUIDE (remove when finished):
@@ -59,7 +60,8 @@ class WordleController:
         self.__buffer = ""
 
         #local word bank for verification (not generation)
-        with open("valid.txt") as f:
+        valid_txt_path = os.path.join(os.path.dirname(__file__), "valid.txt")
+        with open(valid_txt_path) as f:
             self.__valid_words = {i.strip().lower() for i in f}
 
     #when guess is made, pass to model

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Home - NYT Games Clone{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Welcome to NYT Games Clone</h1>
+    <p>Challenge yourself with our collection of word and logic games!</p>
+</div>
+
+<div class="games-grid">
+    <div class="game-card">
+        <h2>Wordle</h2>
+        <p>Guess the five-letter word in 6 tries. Each guess reveals clues about the letters.</p>
+        <a href="{{ url_for('wordle') }}" class="btn btn-primary">Play Wordle</a>
+    </div>
+
+    <div class="game-card">
+        <h2>Spelling Bee</h2>
+        <p>Form words using the given letters. How many can you find?</p>
+        <a href="{{ url_for('spelling_bee') }}" class="btn btn-secondary">Coming Soon</a>
+    </div>
+
+    <div class="game-card">
+        <h2>Tic-Tac-Toe</h2>
+        <p>Classic strategy game. Get three in a row to win!</p>
+        <a href="{{ url_for('tictactoe') }}" class="btn btn-secondary">Coming Soon</a>
+    </div>
+</div>
+{% endblock %}

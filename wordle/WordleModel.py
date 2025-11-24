@@ -1,5 +1,5 @@
-from RandomWordFetcher import *
-from Guess import Guess
+from wordle.RandomWordFetcher import *
+from wordle.Guess import Guess
 
 '''
 WordleModel Class

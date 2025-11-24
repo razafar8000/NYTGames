@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NYT Games Clone{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('index') }}" class="nav-brand">NYT Games Clone</a>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('wordle') }}">Wordle</a></li>
+                <li><a href="{{ url_for('spelling_bee') }}">Spelling Bee</a></li>
+                <li><a href="{{ url_for('tictactoe') }}">Tic-Tac-Toe</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 CS2520 Final Project Group 9 | Educational Project</p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
