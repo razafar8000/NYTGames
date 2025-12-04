@@ -1,0 +1,394 @@
+{% extends "base.html" %}
+
+{% block title %}Wordle - NYT Games Clone{% endblock %}
+
+{% block extra_css %}
+<style>
+    .spellingbee-container {
+        max-width: 500px;
+        margin: 1rem auto;
+        padding: 0 1rem;
+        text-align: center;
+        display: flex;
+        flex-direction: row;
+        min-height: calc(50vh - 80px);
+        justify-content: space-between;
+    }
+
+    .WordList
+    {
+        width: 600px;
+        height: 300px;
+        border: 2px solid #d3d6da;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        background-color: white;
+        margin-left: 50px; 
+        overflow: auto;
+        
+    }
+
+    .UserInput
+    {
+        width: 80px;
+    }
+
+    .game-header {
+        margin-bottom: 0.25rem;
+        margin-right: 50px;
+    }
+
+    .game-header h1 {
+        /*margin: 0.5rem 0;*/
+        font-size: 1.8rem;
+        margin-left: 10;
+    }
+
+    .game-header p {
+        margin: 0.25rem 0;
+    }
+
+    .game-stats {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Grid Styles */
+    .grid {
+        display: grid;
+        grid-template-rows: repeat(6, 1fr);
+        gap: 4px;
+        margin: 0.5rem auto;
+        width: fit-content;
+    }
+
+    .grid-row {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 5px;
+    }
+
+    .grid-cell {
+        width: 52px;
+        height: 52px;
+        border: 2px solid #d3d6da;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        background-color: white;
+    }
+
+    .grid-cell.filled {
+        border-color: #878a8c;
+    }
+
+    /* Keyboard Styles */
+    .keyboard {
+        margin: 0.5rem auto 1rem;
+        max-width: 500px;
+    }
+
+    .keyboard-row {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+        margin-bottom: 4px;
+    }
+
+    .key {
+        padding: 0.75rem 0.5rem;
+        min-width: 38px;
+        background-color: #e8f5c8;
+        border: 1px solid rgba(138, 186, 24, 0.1);
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        text-transform: uppercase;
+        transition: all 0.2s ease;
+    }
+
+
+    .key:hover {
+        background-color: #c8e68f;
+        border-color: #a8d030;
+        transform: translateY(-1px);
+    }
+
+    .key.wide {
+        min-width: 55px;
+        font-size: 0.7rem;
+    }
+
+    /* Game Message */
+    .game-message {
+        margin: 0.5rem 0;
+        padding: 0.75rem;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+
+    .game-message.win {
+        background: linear-gradient(135deg, #8aba18, #a8d030);
+        color: white;
+    }
+
+    .game-message.lose {
+        background-color: #c8e68f;
+        color: #6a9114;
+    }
+
+    .game-message.error {
+        background-color: #ef476f;
+        color: white;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    #reset-btn {
+        padding: 0.8rem 2rem;
+        font-size: 1rem;
+        margin: 0.25rem auto 1rem;
+        display: block;
+        max-width: 200px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+  <div class="game-stats">
+        <div>Words Spelt: <span id="words_spelled">0</span></div>
+    </div>
+
+<div class="spellingbee-container">
+    <div class="game-header">
+        <h1>Spelling Bee</h1>
+        <p>Spell as many words as you can</p>
+    </div>
+    <div id="game-message" class="game-message hidden"></div>
+    <!-- On-screen Keyboard -->
+    <div class="keyboard">
+        <div class="keyboard-row">
+            <button class="key" data-key="q">?</button>
+            <button class="key" data-key="w">?</button>
+            <button class="key" data-key="e">?</button>
+        </div>
+        <div class="keyboard-row">
+            <button class="key" data-key="a">?</button>
+            <button class="key" data-key="s" style="background-color: yellow;">?</button> <!-- Character that is required in word-->
+            <button class="key" data-key="d">?</button>
+        </div>
+        <div class="keyboard-row">
+            <button class="key" data-key="z">?</button>
+            <button class="key" data-key="x">?</button>
+            <button class="key" data-key="c">?</button>
+        </div>
+        <input type="text" id="userInput" name="userInput" class="UserInput" autofocus>
+        <button class="key wide" data-key="enter">Enter</button>
+    </div>
+   <!--   -->
+
+
+   <!--Box where words are stored-->
+        <div class="WordList">
+            <li>this is probably an inneficient way to store words but it works</li>
+        </div>
+</div>
+<button id="reset-btn" class="btn btn-primary" onclick="resetGame()">New Game</button>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+
+    // Initialize game on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        startGame();
+        setupEventListeners();
+    });
+
+
+    //Fetch Spelling bee items instead
+    function startGame() {
+        /*
+        fetch('/wordle/start', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Game started');
+        })
+        .catch(error => {
+            showMessage('Error starting game', 'error');
+            console.error('Error:', error);
+        });
+    }
+
+    function setupEventListeners() {
+        // On-screen keyboard
+        document.querySelectorAll('.key').forEach(key => {
+            key.addEventListener('click', () => {
+                handleKey(key.dataset.key);
+            });
+        });
+
+        // Physical keyboard
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                handleKey('enter');
+            } else if (e.key === 'Backspace') {
+                handleKey('backspace');
+            } else if (/^[a-zA-Z]$/.test(e.key)) {
+                handleKey(e.key.toLowerCase());
+            }
+        });
+        */
+    }
+
+    function handleKey(key) {
+        /*
+        if (gameOver) return;
+
+        if (key === 'enter') {
+            submitGuess();
+        } else if (key === 'backspace') {
+            removeLetter();
+        } else if (currentGuess.length < 5) {
+            addLetter(key);
+        }
+    }
+
+    function addLetter(letter) {
+        if (currentGuess.length < 5) {
+            currentGuess += letter;
+            updateDisplay();
+        }
+    }
+
+    function removeLetter() {
+        currentGuess = currentGuess.slice(0, -1);
+        updateDisplay();
+    }
+
+    function updateDisplay() {
+        const row = document.querySelectorAll('.grid-row')[currentRow];
+        const cells = row.querySelectorAll('.grid-cell');
+
+        cells.forEach((cell, index) => {
+            if (index < currentGuess.length) {
+                cell.textContent = currentGuess[index].toUpperCase();
+                cell.classList.add('filled');
+            } else {
+                cell.textContent = '';
+                cell.classList.remove('filled');
+            }
+        });
+        */
+    }
+
+    function submitGuess() {
+        /*
+        if (currentGuess.length !== 5) {
+            showMessage('Word must be 5 letters', 'error');
+            return;
+        }
+
+        fetch('/wordle/guess', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ guess: currentGuess })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                showMessage(data.error, 'error');
+                return;
+            }
+
+            // Update grid with evaluation
+            updateGridWithEvaluation(data.guesses[currentRow]);
+
+            // Update stats
+            document.getElementById('guess-count').textContent = data.guess_count;
+
+            // Check win/lose
+            if (data.is_won) {
+                showMessage('Congratulations! You won!', 'win');
+                gameOver = true;
+            } else if (data.is_lost) {
+                showMessage(`Game Over! The word was: ${data.secret_word.toUpperCase()}`, 'lose');
+                gameOver = true;
+            } else {
+                currentRow++;
+                currentGuess = '';
+            }
+        })
+        .catch(error => {
+            showMessage('Invalid word or error submitting guess', 'error');
+            console.error('Error:', error);
+        });
+        */
+    }
+
+    function updateGridWithEvaluation(guess) {
+        /*
+        const row = document.querySelectorAll('.grid-row')[currentRow];
+        const cells = row.querySelectorAll('.grid-cell');
+
+        guess.evaluation.forEach((result, index) => {
+            cells[index].classList.remove('filled');
+            cells[index].classList.add(result.toLowerCase());
+        });
+    }
+
+    function showMessage(text, type) {
+        const messageEl = document.getElementById('game-message');
+        messageEl.textContent = text;
+        messageEl.className = `game-message ${type}`;
+        messageEl.classList.remove('hidden');
+
+        // Auto-hide after 3 seconds for errors
+        if (type === 'error') {
+            setTimeout(() => {
+                messageEl.classList.add('hidden');
+            }, 3000);
+        }
+            */
+    }
+
+    function resetGame() {
+        /*
+        fetch('/wordle/reset', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(() => {
+            // Reset UI
+            currentRow = 0;
+            currentGuess = '';
+            gameOver = false;
+
+            document.querySelectorAll('.grid-cell').forEach(cell => {
+                cell.textContent = '';
+                cell.className = 'grid-cell';
+            });
+
+            document.getElementById('guess-count').textContent = '0';
+            document.getElementById('game-message').classList.add('hidden');
+
+            startGame();
+        */
+    }
+</script>
+{% endblock %}
