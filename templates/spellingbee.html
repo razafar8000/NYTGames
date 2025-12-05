@@ -194,8 +194,11 @@
             <button class="key" data-key="x">?</button>
             <button class="key" data-key="c">?</button>
         </div>
+
         <input type="text" id="userInput" name="userInput" class="UserInput" autofocus>
         <button class="key wide" data-key="enter">Enter</button>
+
+
     </div>
    <!--   -->
 
@@ -217,178 +220,21 @@
         setupEventListeners();
     });
 
+    function startGame()
+    {
 
-    //Fetch Spelling bee items instead
-    function startGame() {
-        /*
-        fetch('/wordle/start', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
+        fetch("/spelling_bee/start", {
+            method: 'POST'
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Game started');
-        })
-        .catch(error => {
-            showMessage('Error starting game', 'error');
-            console.error('Error:', error);
-        });
+        
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error)
+
+
     }
 
-    function setupEventListeners() {
-        // On-screen keyboard
-        document.querySelectorAll('.key').forEach(key => {
-            key.addEventListener('click', () => {
-                handleKey(key.dataset.key);
-            });
-        });
 
-        // Physical keyboard
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                handleKey('enter');
-            } else if (e.key === 'Backspace') {
-                handleKey('backspace');
-            } else if (/^[a-zA-Z]$/.test(e.key)) {
-                handleKey(e.key.toLowerCase());
-            }
-        });
-        */
-    }
-
-    function handleKey(key) {
-        /*
-        if (gameOver) return;
-
-        if (key === 'enter') {
-            submitGuess();
-        } else if (key === 'backspace') {
-            removeLetter();
-        } else if (currentGuess.length < 5) {
-            addLetter(key);
-        }
-    }
-
-    function addLetter(letter) {
-        if (currentGuess.length < 5) {
-            currentGuess += letter;
-            updateDisplay();
-        }
-    }
-
-    function removeLetter() {
-        currentGuess = currentGuess.slice(0, -1);
-        updateDisplay();
-    }
-
-    function updateDisplay() {
-        const row = document.querySelectorAll('.grid-row')[currentRow];
-        const cells = row.querySelectorAll('.grid-cell');
-
-        cells.forEach((cell, index) => {
-            if (index < currentGuess.length) {
-                cell.textContent = currentGuess[index].toUpperCase();
-                cell.classList.add('filled');
-            } else {
-                cell.textContent = '';
-                cell.classList.remove('filled');
-            }
-        });
-        */
-    }
-
-    function submitGuess() {
-        /*
-        if (currentGuess.length !== 5) {
-            showMessage('Word must be 5 letters', 'error');
-            return;
-        }
-
-        fetch('/wordle/guess', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ guess: currentGuess })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                showMessage(data.error, 'error');
-                return;
-            }
-
-            // Update grid with evaluation
-            updateGridWithEvaluation(data.guesses[currentRow]);
-
-            // Update stats
-            document.getElementById('guess-count').textContent = data.guess_count;
-
-            // Check win/lose
-            if (data.is_won) {
-                showMessage('Congratulations! You won!', 'win');
-                gameOver = true;
-            } else if (data.is_lost) {
-                showMessage(`Game Over! The word was: ${data.secret_word.toUpperCase()}`, 'lose');
-                gameOver = true;
-            } else {
-                currentRow++;
-                currentGuess = '';
-            }
-        })
-        .catch(error => {
-            showMessage('Invalid word or error submitting guess', 'error');
-            console.error('Error:', error);
-        });
-        */
-    }
-
-    function updateGridWithEvaluation(guess) {
-        /*
-        const row = document.querySelectorAll('.grid-row')[currentRow];
-        const cells = row.querySelectorAll('.grid-cell');
-
-        guess.evaluation.forEach((result, index) => {
-            cells[index].classList.remove('filled');
-            cells[index].classList.add(result.toLowerCase());
-        });
-    }
-
-    function showMessage(text, type) {
-        const messageEl = document.getElementById('game-message');
-        messageEl.textContent = text;
-        messageEl.className = `game-message ${type}`;
-        messageEl.classList.remove('hidden');
-
-        // Auto-hide after 3 seconds for errors
-        if (type === 'error') {
-            setTimeout(() => {
-                messageEl.classList.add('hidden');
-            }, 3000);
-        }
-            */
-    }
-
-    function resetGame() {
-        /*
-        fetch('/wordle/reset', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        })
-        .then(() => {
-            // Reset UI
-            currentRow = 0;
-            currentGuess = '';
-            gameOver = false;
-
-            document.querySelectorAll('.grid-cell').forEach(cell => {
-                cell.textContent = '';
-                cell.className = 'grid-cell';
-            });
-
-            document.getElementById('guess-count').textContent = '0';
-            document.getElementById('game-message').classList.add('hidden');
-
-            startGame();
-        */
-    }
+   
 </script>
 {% endblock %}

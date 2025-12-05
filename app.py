@@ -130,12 +130,12 @@ def spelling_bee():
 def spellingBeeStart():
     #create session
     spellingBeeController = SpellingBeeController()
-    session["SpellingBee"] = spellingBeeController
+    #session["SpellingBee"] = spellingBeeController
     
     usableLetters = spellingBeeController.getUsableLetters()
     points = spellingBeeController.getGamePoints()
 
-    return jsonify({"usableLetters": usableLetters})
+    return jsonify({"usableLetters": str(usableLetters)})
 
 @app.route('/spelling_bee/spellingBeeGuess')
 def submitAnswer():
