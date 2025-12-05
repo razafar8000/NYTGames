@@ -395,6 +395,7 @@
         const cells = row.querySelectorAll('.grid-cell');
 
         guess.evaluation.forEach((result, index) => {
+            cells[index].textContent = guess.word[index].toUpperCase();  // AnNguyen fixed 12/05 - display letters
             cells[index].classList.remove('filled');
             cells[index].classList.add(result.toLowerCase());
         });
@@ -414,13 +415,16 @@
         }
     }
 
+    // AnNguyen fixed race condition bug on 12/05 - properly chain async reset/start calls
     function resetGame() {
+        document.activeElement.blur();  // Remove focus from button to prevent Enter key from retriggering
         fetch('/wordle/reset', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
         })
+        .then(response => response.json())
         .then(() => {
-            // Reset UI
+            // Reset UI state
             currentRow = 0;
             currentGuess = '';
             gameOver = false;
@@ -433,7 +437,19 @@
             document.getElementById('guess-count').textContent = '0';
             document.getElementById('game-message').classList.add('hidden');
 
-            startGame();
+            // Start new game after reset completes
+            return fetch('/wordle/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('New game started after reset');
+        })
+        .catch(error => {
+            showMessage('Error resetting game', 'error');
+            console.error('Error:', error);
         });
     }
 </script>
