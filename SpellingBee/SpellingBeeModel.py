@@ -7,12 +7,15 @@ class SpellingBeeModel:
         self.__points = 0 
         self.__validAnswers = []
         self.__usableLetters = self.generateUsableLetters()
-        WordListGenerator = reader.WordDictionary("WordRepository\words_dictionary.json")
-        self.__wordList = WordListGenerator.getWordsOfLength(7)
+        self.__wordList = reader.WordDictionary("WordRepository\words_dictionary.json")
 
     #checks to see if userInput contains the 7 selected words
 
     #creates a random list of 7 characters that contains letters that are able to be used in spelling bee
+
+    def getUsableLetters(self):
+        return self.__usableLetters
+
     def generateUsableLetters(self):
         vowels = "aeiou"
         consonants = "bcdfghjklmnpqrstvwxyz"
@@ -52,10 +55,7 @@ class SpellingBeeModel:
         
     #If word found in list of words length 7, return true
     def containsWord(self, userInput):
-        if userInput in self.__wordList:
-            return True
-        else:
-            return False
+        return self.__wordList.contains(userInput)
 
     def addPoint(self):
         self.__points += 1
