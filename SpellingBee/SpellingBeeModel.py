@@ -1,13 +1,17 @@
-import WordRepository.DictionaryReader as reader
+from WordRepository import DictionaryReader
 import random
 
 class SpellingBeeModel:
 
     def __init__(self):
+
+
+        
+
         self.__points = 0 
         self.__validAnswers = []
         self.__usableLetters = self.generateUsableLetters()
-        self.__wordList = reader.WordDictionary("WordRepository\words_dictionary.json")
+        self.__wordList = DictionaryReader.WordDictionary("WordRepository\words_dictionary.json")
 
     #checks to see if userInput contains the 7 selected words
 

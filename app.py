@@ -9,8 +9,11 @@ import os
 
 # Add project root to path for imports
 sys.path.insert(0, os.path.dirname(__file__))
+sys.path.append(os.path.abspath('WordRepository'))
+sys.path.append(os.path.abspath('SpellingBee'))
 
 from wordle.WordleController import WordleController
+from SpellingBee.SpellingBeeController import SpellingBeeController
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
@@ -122,6 +125,28 @@ def wordle_reset():
 def spelling_bee():
     """Spelling Bee game (to be implemented)."""
     return render_template('spellingbee.html', game='Spelling Bee')
+
+@app.route('/spelling_bee/start', methods=['POST'])
+def spellingBeeStart():
+    #create session
+    spellingBeeController = SpellingBeeController()
+    session["SpellingBee"] = spellingBeeController
+    
+    usableLetters = spellingBeeController.getUsableLetters()
+    points = spellingBeeController.getGamePoints()
+
+    return jsonify({"usableLetters": usableLetters})
+
+@app.route('/spelling_bee/spellingBeeGuess')
+def submitAnswer():
+    print("hello")
+    return None
+
+
+
+
+
+# ================================================================================
 
 
 @app.route('/tictactoe')

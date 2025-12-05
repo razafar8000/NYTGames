@@ -1,8 +1,8 @@
-import SpellingBeeModel
-
+from SpellingBeeModel import SpellingBeeModel
+ 
 class SpellingBeeController:
     def __init__(self):
-        self.__wordleModel = SpellingBeeModel.SpellingBeeModel()
+        self.__wordleModel = SpellingBeeModel()
 
 
 
@@ -17,7 +17,7 @@ class SpellingBeeController:
 
     def getUsableLetters(self):
         return self.__wordleModel.getUsableLetters()
-
+    
     def processInput(self, userInput):
         if not self.__wordleModel.hasValidLetters():
             return False
