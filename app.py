@@ -156,7 +156,7 @@ def spelling_bee_guess():
     if 'spelling_bee_letters' not in session:
         return jsonify({'error': 'No active game. Start a new game first.'}), 400
 
-    # Create controller with current game state
+
     controller = SpellingBeeController()
     controller._SpellingBeeController__wordleModel._SpellingBeeModel__usableLetters = session['spelling_bee_letters']
 

@@ -214,11 +214,18 @@
 
     /* Game Message */
     .game-message {
-        margin: 1rem 0;
-        padding: 0.75rem;
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        min-width: 300px;
+        max-width: 500px;
+        padding: 0.75rem 1.5rem;
         border-radius: 6px;
         font-weight: 600;
         animation: fadeIn 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     .game-message.success {
@@ -229,6 +236,17 @@
     .game-message.error {
         background-color: #ef476f;
         color: white;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
     }
 
     .hidden {
