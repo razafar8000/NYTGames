@@ -1,0 +1,46 @@
+class TicTacToeModel:
+    
+    #Stores the Tic-Tac-Toe board and handles game logic.
+    
+    def __init__(self):
+        #Board is a 3x3 list with values: '', 'X', or 'O'
+        self.board = [['' for _ in range(3)] for _ in range(3)]
+        self.current_player = 'X'
+
+    def make_move(self, row: int, col: int):
+        #Attempting to place the current player's mark on the board.
+        if self.board[row][col] != '':
+            return False  #invalid move (square already taken)
+        
+        self.board[row][col] = self.current_player
+        return True
+
+    def switch_player(self):
+        #Swapping X ↔ O.
+        self.current_player = 'O' if self.current_player == 'X' else 'X'
+
+    def check_winner(self):
+        #Checking if the game has a winner.
+        b = self.board
+
+        #Checking rows & columns
+        for i in range(3):
+            if b[i][0] == b[i][1] == b[i][2] != '':
+                return b[i][0]
+            if b[0][i] == b[1][i] == b[2][i] != '':
+                return b[0][i]
+
+        #diagonals
+        if b[0][0] == b[1][1] == b[2][2] != '':
+            return b[0][0]
+        if b[0][2] == b[1][1] == b[2][0] != '':
+            return b[0][2]
+
+        return None
+
+    def check_tie(self):
+        #Returning True if the board is full and no winner.
+        for row in self.board:
+            if '' in row:
+                return False
+        return True
