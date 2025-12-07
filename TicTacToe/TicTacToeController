@@ -1,0 +1,35 @@
+from TicTacToe.TicTacToeController import TicTacToeModel
+
+class TicTacToeController:
+    
+    #Handles game state and interaction for Tic-Tac-Toe.
+    
+    def __init__(self):
+        self.model = TicTacToeModel()
+
+    def start_game(self):
+        #Resets the board.
+        self.model = TicTacToeModel()
+        return self.model.board
+
+    def play_move(self, row, col):
+        #Processes a move and returns updated game state.
+        if not self.model.make_move(row, col):
+            return {"error": "Invalid move"}
+
+        winner = self.model.check_winner()
+        tie = self.model.check_tie()
+
+        result = {
+            "board": self.model.board,
+            "current_player": self.model.current_player,
+            "winner": winner,
+            "tie": tie
+        }
+
+        if not winner and not tie:
+            self.model.switch_player()
+            result["next_player"] = self.model.current_player
+
+        return result
+

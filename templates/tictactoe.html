@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}Tic Tac Toe - NYT Games Clone{% endblock %}
+
+{% block extra_css %}
+<style>
+    .tictactoe-container {
+        max-width: 500px;
+        margin: 1rem auto;
+        padding: 0 1rem;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        min-height: calc(100vh - 80px);
+        justify-content: space-between;
+    }
+
+    .game-header h1 {
+        margin: 0.5rem 0;
+        font-size: 1.8rem;
+    }
+
+    /* Message bar */
+    .game-message {
+        margin: 0.5rem 0;
+        padding: 0.75rem;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+
+    .game-message.win {
+        background: linear-gradient(135deg, #8aba18, #a8d030);
+        color: white;
+    }
+
+    .game-message.tie {
+        background-color: #c8e68f;
+        color: #6a9114;
+    }
+
+    .game-message.error {
+        background-color: #ef476f;
+        color: white;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .ttt-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 100px);
+        grid-template-rows: repeat(3, 100px);
+        gap: 6px;
+        margin: 1rem auto;
+    }
+
+    .ttt-cell {
+        width: 100px;
+        height: 100px;
+        border: 2px solid #d3d6da;
+        background-color: white;
+        font-size: 2.5rem;
+        font-weight: bold;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    .ttt-cell:hover {
+        background-color: #f1f3f4;
+        transform: translateY(-2px);
+    }
+
+    .ttt-cell.X {
+        color: #6ca965;
+    }
+
+    .ttt-cell.O {
+        color: #ef476f;
+    }
+
+    #reset-btn {
+        padding: 0.8rem 2rem;
+        font-size: 1rem;
+        margin: 0.25rem auto 1rem;
+        display: block;
+        max-width: 200px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="tictactoe-container">
+    <div class="game-header">
+        <h1>Tic Tac Toe</h1>
+        <p>Try to get 3 in a row</p>
+    </div>
+
+    <div id="game-message" class="game-message hidden"></div>
+
+    <!-- Game Board -->
+    <div id="board" class="ttt-grid">
+        
+    </div>
+
+    <button id="reset-btn" class="btn btn-primary">New Game</button>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let board = [];
+    let gameOver = false;
+    let currentPlayer = "X";
+
+    document.addEventListener("DOMContentLoaded", () => {
+        startGame();
+        document.getElementById("reset-btn").onclick = startGame;
+    });
+
+    function showMessage(text, type) {
+        const msg = document.getElementById("game-message");
+        msg.textContent = text;
+        msg.className = `game-message ${type}`;
+        msg.classList.remove("hidden");
+    }
+
+    function clearMessage() {
+        document.getElementById("game-message").classList.add("hidden");
+    }
+
+    function startGame() {
+        clearMessage();
+        gameOver = false;
+
+        fetch("/tictactoe/start", { method: "POST" })
+            .then(res => res.json())
+            .then(data => {
+                board = data.board;
+                currentPlayer = data.player;
+                renderBoard();
+            });
+    }
+
+    function renderBoard() {
+        const boardDiv = document.getElementById("board");
+        boardDiv.innerHTML = "";
+
+        board.forEach((row, r) => {
+            row.forEach((cell, c) => {
+                const tile = document.createElement("div");
+                tile.classList.add("ttt-cell");
+                if (cell === "X" || cell === "O") tile.classList.add(cell);
+                tile.textContent = cell;
+                tile.onclick = () => makeMove(r, c);
+                boardDiv.appendChild(tile);
+            });
+        });
+    }
+
+    function makeMove(r, c) {
+        if (gameOver) return;
+
+        fetch("/tictactoe/move", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ row: r, col: c })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                showMessage(data.error, "error");
+                return;
+            }
+
+            board = data.board;
+            renderBoard();
+
+            if (data.winner) {
+                gameOver = true;
+                showMessage(`Player ${data.winner} wins!`, "win");
+                return;
+            }
+
+            if (data.tie) {
+                gameOver = true;
+                showMessage(`It's a tie!`, "tie");
+                return;
+            }
+
+            currentPlayer = data.next_player;
+        });
+    }
+</script>
+{% endblock %}

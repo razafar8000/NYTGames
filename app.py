@@ -11,9 +11,12 @@ import os
 sys.path.insert(0, os.path.dirname(__file__))
 sys.path.append(os.path.abspath('WordRepository'))
 sys.path.append(os.path.abspath('SpellingBee'))
+sys.path.append(os.path.abspath('TicTacToe'))
 
 from wordle.WordleController import WordleController
 from SpellingBee.SpellingBeeController import SpellingBeeController
+from TicTacToe import TicTacToeController
+
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
@@ -190,14 +193,46 @@ def spelling_bee_reset():
 
 
 
-
-# ================================================================================
-
+# ==================== TIC TAC TOE ====================
 
 @app.route('/tictactoe')
 def tictactoe():
-    """Tic-Tac-Toe game (to be implemented)."""
-    return render_template('coming_soon.html', game='Tic-Tac-Toe')
+    return render_template('tictactoe.html')
+
+
+@app.route('/tictactoe/start', methods=['POST'])
+def tictactoe_start():
+    controller = TicTacToeController()
+    session['tictactoe'] = controller.model.board
+    session['current_player'] = 'X'
+    session.modified = True
+    return jsonify({'board': session['tictactoe'], 'player': 'X'})
+
+
+@app.route('/tictactoe/move', methods=['POST'])
+def tictactoe_move():
+    data = request.get_json()
+    row = data.get("row")
+    col = data.get("col")
+
+    if row is None or col is None:
+        return jsonify({'error': 'Missing row/col'}), 400
+
+    controller = TicTacToeController()
+    controller.model.board = session['tictactoe']
+    controller.model.current_player = session['current_player']
+
+    result = controller.play_move(row, col)
+
+    if "error" in result:
+        return jsonify(result), 400
+
+    session['tictactoe'] = result['board']
+    session['current_player'] = controller.model.current_player
+    session.modified = True
+
+    return jsonify(result)
+
 
 
 # ==================== ERROR HANDLERS ====================
